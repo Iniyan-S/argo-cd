@@ -1,0 +1,12 @@
+---
+global:
+  image: 
+    tag: "v2.6.6"
+
+# To disable generating a self-cert and redirect http to https suitable only for local dev/test
+# https://argo-cd.readthedocs.io/en/latest/operator-manual/tls/
+# Also if your ingress/controller already terminate TLS at the edge, this is often the right setting
+# https://argo-cd.readthedocs.io/en/stable/operator-manual/ingress/
+service:
+  extraArgs:
+    - --insecure # disables TLS for the API server (HTTP instead of HTTPS), Deploymnent container command lines include this flag, and ArgoCD server listens in plaintext mode (skips cert validation)

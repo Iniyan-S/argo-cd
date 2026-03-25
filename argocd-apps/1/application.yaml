@@ -12,5 +12,15 @@ spec:
     repoURL: https://github.com/Iniyan-S/kubernetes.git # Can point to either a Helm chart repo or a git repo
     targetRevision: HEAD # For Helm, this refers to the chart version.
     path: argocd-demo-apps/app-01 # Path to track inside the git repo
-  destination:
+  destination: # Destination cluster and namespace to deploy the application
     server: https://kubernetes.default.svc # cluster API URL, In this example app is deployed to the same k8s cluster where argocd is running
+  syncPolicy: # Sync policy
+    automated: # automated sync by default retries failed attempts 5 times with following delays between attempts ( 5s, 10s, 20s, 40s, 80s ); retry controlled using `retry` field.
+      prune: true # Specifies if resources should be pruned during auto-syncing ( false by default ).
+      selfHeal: true # Allows synchronizing the state if the Kubernetes state was changed for some reason maybe a manual change on the cluster by someone( false by default ).
+      allowEmpty: false # Allows deleting all application resources during automatic syncing ( false by default ).
+    syncOptions:     # Sync options which modifies sync behavior
+      - Validate=true # disables resource validation (equivalent to 'kubectl apply --validate=false') ( true by default ).
+      - CreateNamespace=true # Namespace Auto-Creation ensures that namespace specified as the application destination exists in the destination cluster.
+      - PrunePropagationPolicy=foreground # This option controls how Kubernetes handles the deletion of resources during ArgoCD's pruning phase (when removing resources no longer defined in Git). The "foreground" policy ensures that dependent objects (e.g., child resources like Pods under a Deployment) are deleted before the parent resource. This prevents orphaned dependents and ensures a clean, sequential deletion order. Supported values are, background, foreground and orphan.
+      - PruneLast=true # This enables pruning as the final, implicit step in a sync operation, after all other changes (like creating/updating resources) have been applied. It ensures that resource removal happens only once the application is fully reconciled, reducing the risk of premature deletions during sync. When false (default), pruning can occur earlier in the sync process. This is useful for complex applications where order matters, but may increase sync time.

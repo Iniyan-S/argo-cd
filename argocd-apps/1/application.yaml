@@ -1,0 +1,16 @@
+# https://argo-cd.readthedocs.io/en/stable/user-guide/application-specification/
+# https://github.com/argoproj/argo-cd/blob/master/docs/user-guide/application-specification.md
+---
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: app-01
+  namespace: argocd # Application object "app-01" will be created in "argocd" namespace (where the argocd is installed), not the target namespace for "deployment" object
+spec:
+  project: default # Projects provide a logical grouping of applications, which is useful when ArgoCD is used by multiple teams
+  source:
+    repoURL: https://github.com/Iniyan-S/kubernetes.git # Can point to either a Helm chart repo or a git repo
+    targetRevision: HEAD # For Helm, this refers to the chart version.
+    path: argocd-demo-apps/app-01 # Path to track inside the git repo
+  destination:
+    server: https://kubernetes.default.svc # cluster API URL, In this example app is deployed to the same k8s cluster where argocd is running

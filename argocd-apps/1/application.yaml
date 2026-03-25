@@ -6,6 +6,8 @@ kind: Application
 metadata:
   name: app-01
   namespace: argocd # Application object "app-01" will be created in "argocd" namespace (where the argocd is installed), not the target namespace for "deployment" object
+  finalizers: 
+    - resources-finalizer.argocd.argoproj.io #  Ensuring dependent resources (like Deployments, Services) are removed before the Application itself, avoiding orphaned objects in the cluster.
 spec:
   project: default # Projects provide a logical grouping of applications, which is useful when ArgoCD is used by multiple teams
   source:
